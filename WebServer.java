@@ -4,7 +4,7 @@ import java.io.*;
 
 public class WebServer {
 
-	ServerConfiguration config;
+	private ServerConfiguration config;
 
 	public WebServer() {
 		this.config = new ServerConfiguration(new File("./conf/httpd.conf"));

@@ -4,8 +4,8 @@ import java.util.*;
 
 public class ServerConfiguration {
 
-	HashMap<String, String> settings;
-	HashMap<String, HashMap<String, String>> alias;
+	private HashMap<String, String> settings;
+	private HashMap<String, HashMap<String, String>> alias;
 
 	public ServerConfiguration(File configFile) {
 		createSettingsFromFile(configFile);
@@ -36,7 +36,6 @@ public class ServerConfiguration {
 	}
 
 	private void createSettingsFromFile(File configFile) {
-		//TODO: Get rid of quotes around strings in config file
 		HashMap<String, String> configSettings = new HashMap<>();
 		configSettings.put("ServerRoot", "");
 		configSettings.put("DocumentRoot", "");
