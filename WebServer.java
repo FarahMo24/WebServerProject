@@ -1,16 +1,14 @@
 //Entry point for Web Server
 import ServerUtils.*;
 import java.io.*;
+import java.util.*;
 
 public class WebServer {
 
-	private ServerConfiguration config;
-	private ServerMimeMap mimeType;
-
 	public WebServer() {
-		this.config = new ServerConfiguration(new File("./conf/httpd.conf"));
-		this.mimeType = new ServerMimeMap(new File("./conf/mime.types"));
-		
+		System.out.println(Configuration.getPathForAlias("/ab/"));
+		System.out.println(Configuration.getPathForScriptAlias("/cgi-bin/"));
+		System.out.println(Configuration.getMime("html"));
 	}
 
 	public static void main(String[] args) {
