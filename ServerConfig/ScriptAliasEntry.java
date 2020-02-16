@@ -1,4 +1,7 @@
-package ServerUtils;
+package ServerConfig;
+
+import ServerConfig.ConfigEntry;
+import ServerConfig.Configuration;
 
 public class ScriptAliasEntry extends ConfigEntry {
 	public ScriptAliasEntry(String key, String value) {

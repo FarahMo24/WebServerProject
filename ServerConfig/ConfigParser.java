@@ -1,4 +1,6 @@
-package ServerUtils;
+package ServerConfig;
+
+import ServerUtils.Helpers;
 
 public class ConfigParser {
 

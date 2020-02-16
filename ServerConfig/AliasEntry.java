@@ -1,4 +1,4 @@
-package ServerUtils;
+package ServerConfig;
 
 public class AliasEntry extends ConfigEntry {
 	public AliasEntry(String key, String value) {

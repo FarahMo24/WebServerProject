@@ -1,7 +1,5 @@
 //Entry point for Web Server
-import ServerUtils.*;
-import java.io.*;
-import java.util.*;
+import ServerConfig.Configuration;
 
 public class WebServer {
 

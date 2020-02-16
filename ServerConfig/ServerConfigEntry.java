@@ -1,6 +1,7 @@
-package ServerUtils;
+package ServerConfig;
 
-import java.util.HashMap;
+import ServerConfig.ConfigEntry;
+import ServerConfig.Configuration;
 
 public class ServerConfigEntry extends ConfigEntry {
 

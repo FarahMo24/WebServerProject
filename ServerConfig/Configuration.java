@@ -1,4 +1,4 @@
-package ServerUtils;
+package ServerConfig;
 
 import java.io.File;
 import java.io.IOException;
