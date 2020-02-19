@@ -1,15 +1,20 @@
-//Entry point for Web Server
-import ServerConfig.Configuration;
+import ServerConfig.*;
+import ServerUtils.*;
+import java.io.*;
+
 
 public class WebServer {
 
-	public WebServer() {
-		System.out.println(Configuration.getPathForAlias("/ab/"));
-		System.out.println(Configuration.getPathForScriptAlias("/cgi-bin/"));
-		System.out.println(Configuration.getMime("html"));
+	public WebServer(){
+		System.out.println("Web Server instance created");
 	}
 
-	public static void main(String[] args) {
-		WebServer server = new WebServer();
+	public static void main(String[] args){
+
+		WebServer webServer = new WebServer();
+		//System.out.println(webServer.mimeTypeConfig.getMime("ez"));
+		Server server = new Server();
+		server.start();
 	}
+
 }

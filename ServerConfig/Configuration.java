@@ -8,11 +8,14 @@ import java.util.*;
 
 public class Configuration {
 
+	//TODO: Set default values
+
 	private static ServerConfiguration serverConfig = new ServerConfiguration();
-	private static ServerMimeMap mimeMap = new ServerMimeMap(new File("./conf/mime.types"));
+	private static ServerMimeMap mimeMap = new ServerMimeMap(new File(System.getProperty("user.dir") + "/conf/mime.types"));
 
 	static {
-		serverConfig.createSettingsFromFile(Paths.get("./conf/httpd.conf"));
+		String dir = System.getProperty("user.dir");
+		serverConfig.createSettingsFromFile(Paths.get(dir + "/conf/httpd.conf"));
 	}
 
 	public static String getMime(String ext) {
