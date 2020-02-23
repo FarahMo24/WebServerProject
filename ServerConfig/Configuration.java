@@ -8,10 +8,8 @@ import java.util.*;
 
 public class Configuration {
 
-	//TODO: Set default values
-
-	private static ServerConfiguration serverConfig = new ServerConfiguration();
-	private static ServerMimeMap mimeMap = new ServerMimeMap(new File(System.getProperty("user.dir") + "/conf/mime.types"));
+	private static final ServerConfiguration serverConfig = new ServerConfiguration();
+	private static final ServerMimeMap mimeMap = new ServerMimeMap(new File(System.getProperty("user.dir") + "/conf/mime.types"));
 
 	static {
 		String dir = System.getProperty("user.dir");
@@ -28,6 +26,14 @@ public class Configuration {
 
 	public static String getDocumentRoot() {
 		return serverConfig.getDocumentRoot();
+	}
+
+	public static String getDirectoryIndex() {
+		return serverConfig.getDirectoryIndex();
+	}
+
+	public static String getAccessFile() {
+		return serverConfig.getAccessFile();
 	}
 
 	public static String getPort() {
@@ -60,53 +66,64 @@ public class Configuration {
 
 	private static class ServerConfiguration {
 
-		private HashMap<String, String> settings;
-		private HashMap<String, String> alias;
-		private HashMap<String, String> scriptAlias;
+		private final HashMap<String, String> settings;
+		private final HashMap<String, String> alias;
+		private final HashMap<String, String> scriptAlias;
 
-		public ServerConfiguration() {
-			settings = new HashMap();
-			alias = new HashMap();
-			scriptAlias = new HashMap();
+		ServerConfiguration() {
+			settings = new HashMap<>();
+			settings.put("DirectoryIndex", "index.html");
+			settings.put("Listen", "8080");
+			settings.put("AccessFile", ".htaccess");
+			alias = new HashMap<>();
+			scriptAlias = new HashMap<>();
 		}
 
-		public String getServerRoot() {
+		String getAccessFile() {
+			return settings.get("AccessFile");
+		}
+
+		String getDirectoryIndex() {
+			return settings.get("DirectoryIndex");
+		}
+
+		String getServerRoot() {
 			return settings.get("ServerRoot");
 		}
 
-		public String getDocumentRoot() {
+		String getDocumentRoot() {
 			return settings.get("DocumentRoot");
 		}
 
-		public String getPort() {
+		String getPort() {
 			return settings.get("Listen");
 		}
 
-		public String getLogFilePath() {
+		String getLogFilePath() {
 			return settings.get("LogFile");
 		}
 
-		public HashMap<String, String> getSettings() {
+		HashMap<String, String> getSettings() {
 			return settings;
 		}
 
-		public HashMap<String, String> getScriptAlias() {
+		HashMap<String, String> getScriptAlias() {
 			return scriptAlias;
 		}
 
-		public HashMap<String, String> getAlias() {
+		HashMap<String, String> getAlias() {
 			return alias;
 		}
 
-		public String getPathForAlias(String alias) {
+		String getPathForAlias(String alias) {
 			return getAlias().get(alias);
 		}
 
-		public String getPathForScriptAlias(String scriptAlias) {
+		String getPathForScriptAlias(String scriptAlias) {
 			return getScriptAlias().get(scriptAlias);
 		}
 
-		public void createSettingsFromFile(Path configPath) {
+		void createSettingsFromFile(Path configPath) {
 			try {
 				List<String> fileLines = Files.readAllLines(configPath, Charset.defaultCharset());
 				for(String line : fileLines) {
@@ -114,7 +131,7 @@ public class Configuration {
 					setting.storeEntry();
 				}
 			} catch (IOException e) {
-				System.out.println("Error reading configuration file");
+				System.out.println("Error reading configuration file" + e);
 			}
 		}
 	}
@@ -122,11 +139,11 @@ public class Configuration {
 	private static class ServerMimeMap {
 		private HashMap<String, String> mapExt;
 
-		public ServerMimeMap(File mimeFile){
+		ServerMimeMap(File mimeFile){
 			createMapping(mimeFile);
 		}
 
-		public String getMime(String ext){
+		String getMime(String ext){
 			return mapExt.get(ext);
 		}
 
@@ -140,7 +157,7 @@ public class Configuration {
 					if (str.startsWith("#") || str.startsWith(" ")) {
 						continue;
 					}
-					String mimeType="";
+					String mimeType;
 					String[] splitArr = str.split("\\s+");
 					mimeType = splitArr[0];
 					for(int i = 1; i < splitArr.length;i++){

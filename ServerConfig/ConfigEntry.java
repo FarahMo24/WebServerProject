@@ -21,7 +21,7 @@ public abstract class ConfigEntry {
 	}
 
 	public void storeEntry() {
-		if(keyword != "") {
+		if(!keyword.equals("")) {
 			configCategory.put(keyword, value);
 		}
 	}

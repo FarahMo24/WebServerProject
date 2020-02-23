@@ -1,8 +1,7 @@
-import ServerConfig.*;
 import ServerUtils.*;
-import java.io.*;
 
 
+@SuppressWarnings("WeakerAccess")
 public class WebServer {
 
 	public WebServer(){
@@ -10,9 +9,7 @@ public class WebServer {
 	}
 
 	public static void main(String[] args){
-
-		WebServer webServer = new WebServer();
-		//System.out.println(webServer.mimeTypeConfig.getMime("ez"));
+		System.out.println("Starting point");
 		Server server = new Server();
 		server.start();
 	}

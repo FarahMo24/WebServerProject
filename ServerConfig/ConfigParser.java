@@ -2,11 +2,11 @@ package ServerConfig;
 
 import ServerUtils.Helpers;
 
-public class ConfigParser {
+class ConfigParser {
 
-	private ConfigEntry setting;
+	private final ConfigEntry setting;
 
-	public ConfigParser(String line) {
+	ConfigParser(String line) {
 		String[] splitLine = line.split("\"");
 		String value = "";
 		if(splitLine.length > 1) {

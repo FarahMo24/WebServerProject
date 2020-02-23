@@ -1,40 +1,46 @@
 package ServerUtils;
 
-import ServerConfig.*;
 import ServerRequest.*;
+import ServerResponse.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.IOException;
 import java.net.Socket;
-import java.sql.SQLOutput;
 
-public class ServerHelper {
+class ServerHelper {
 
-	BufferedReader in;
-	PrintWriter out;
-	Socket connect = null;
+	private final Socket connect;
 
-	public ServerHelper(Socket accept) {
-
+	ServerHelper(Socket accept) {
 		this.connect = accept;
 	}
 
 	public void RequestStart(){
 
 		try {
-			in = new BufferedReader(new InputStreamReader(connect.getInputStream()));
+			BufferedReader in = new BufferedReader(new InputStreamReader(connect.getInputStream()));
+			PrintWriter out = new PrintWriter(connect.getOutputStream(), true);
 
-			out = new PrintWriter(connect.getOutputStream(), true);
-
-			// Parse Request
-			RequestParser request = new RequestParser(in);
-			System.out.println("Finished with Request");
-
-			// Path Configuration
-			UriHandler uriConfig = new UriHandler(request);
+			Request request = new Request(in);
+			Response response = new Response(request);
+			ResponseGenerator outputValues = new ResponseGenerator(response);
+			sendResponse(connect, outputValues.responseOutput, outputValues.bodyOutput);
 
 		} catch(Exception e) {
-			System.out.println("InputStream errror");
+			System.out.println("InputStream error");
 		}
+	}
+
+	public void sendResponse(Socket client, String output, byte[] bodyOutput) throws IOException {
+		PrintWriter out = new PrintWriter(client.getOutputStream(), true);
+		out.println(output);
+		client.getOutputStream().write(bodyOutput);
+		System.out.println("I sent:\n" + output);
+		System.out.println("Body:");
+		for(byte element : bodyOutput) {
+			System.out.print(element);
+		}
+		System.out.println("\n");
 	}
 }
