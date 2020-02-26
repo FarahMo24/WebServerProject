@@ -14,7 +14,9 @@ public class ResponseGenerator {
 			headers = headers + header.getKey() + ": " + header.getValue() + "\n";
 		}
 		responseOutput = firstLine + "\n" + headers;
-		bodyOutput = new byte[response.getResponseBody().size()];
+		if(response.getResponseBody() != null) {
+			bodyOutput = new byte[response.getResponseBody().size()];
+		}
 		if(response.getResponseBody() != null) {
 			for (int i = 0; i < response.getResponseBody().size(); i++) {
 				bodyOutput[i] = (byte)response.getResponseBody().get(i);

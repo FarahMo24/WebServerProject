@@ -16,8 +16,8 @@ public class Server {
 
 			while(true){
 				client = serverConnect.accept();
-				ServerHelper helper = new ServerHelper((client));
-				helper.RequestStart();
+				ServerHelper helper = new ServerHelper();
+				helper.RequestStart(client);
 				client.close();
 			}
 		}catch (IOException e){

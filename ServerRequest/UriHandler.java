@@ -5,7 +5,6 @@ import java.io.*;
 
 public class UriHandler {
 
-	//TODO: Think about how to store this bool differently
 	static private Boolean isResourceScript = false;
 
 	public UriHandler(String uri) {
@@ -24,16 +23,16 @@ public class UriHandler {
 		}
 		String pathPrefix = resolveAlias(lookup);
 		String fullPath = pathPrefix + pathSuffix;
-		//TODO: Consider extracting this
+		return appendDirectoryIndex(fullPath);
+	}
+
+	private static String appendDirectoryIndex(String fullPath) {
 		File f = new File(fullPath);
 		if(f.exists() && f.isDirectory()) {
 			if(!fullPath.endsWith("/")) {
 				fullPath = fullPath + "/";
 			}
 			fullPath = fullPath + Configuration.getDirectoryIndex();
-		} else if(!f.exists()) {
-			//TODO: Put 404 error here
-			System.out.println("File does not exist");
 		}
 		return fullPath;
 	}
