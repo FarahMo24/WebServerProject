@@ -17,8 +17,8 @@ public class Helpers {
 		String name = f.getName();
 		int lastIndexOf = name.lastIndexOf(".");
 		if (lastIndexOf == -1) {
-			return ""; // empty extension
+			return "";
 		}
-		return name.substring(lastIndexOf);
+		return name.substring(lastIndexOf + 1);
 	}
 }

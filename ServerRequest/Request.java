@@ -9,14 +9,16 @@ import java.util.ArrayList;
 
 public class Request {
 
+	//TODO: Make sure all 400 error cases are accounted for here
+
 	private final HashMap<String, String> requestValues;
 	private byte[] body;
-	private final HashMap<String, String> paramMap = new HashMap<>();
 	private final HashMap<String,String> headers = new HashMap<>();
 	public boolean isBadRequest = false;
+	public boolean isResourceScript = false;
 
 	public String getHttpMethod() {
-		return requestValues.get("httpMethod");
+		return requestValues.get("HTTP_VERB");
 	}
 
 	public String getURI() {
@@ -24,11 +26,19 @@ public class Request {
 	}
 
 	public String getHttpVersion() {
-		return requestValues.get("httpVersion");
+		return requestValues.get("HTTP_PROTOCOL");
 	}
 
 	public byte[] getBody() {
 		return body;
+	}
+
+	public HashMap<String, String> getHeaders() {
+		return headers;
+	}
+
+	public String getQueryString() {
+		return requestValues.get("QUERY_STRING");
 	}
 
 	public Request(BufferedReader in) throws IOException {
@@ -40,9 +50,9 @@ public class Request {
 	}
 
 	private void parseBody(BufferedReader in) throws IOException {
-		if(headers.containsKey("Content-Length")){
-			if(!headers.get("Content-Length").equals("0")){
-				int length = Integer.parseInt(headers.get("Content-Length")); //Number of bytes in body
+		if(headers.containsKey("CONTENT_LENGTH")){
+			if(!headers.get("CONTENT_LENGTH").equals("0")){
+				int length = Integer.parseInt(headers.get("CONTENT_LENGTH")); //Number of bytes in body
 				byte[] bodyData = new byte[length];
 				for(int i = 0; i < length; i++){
 					byte bodyElement = (byte) in.read();
@@ -65,20 +75,14 @@ public class Request {
 		try {
 			String[] lineSplit = line.split("\\s+");
 			if(lineSplit.length == 3) {
-				requestValues.put("httpMethod", lineSplit[0]);
+				requestValues.put("HTTP_VERB", lineSplit[0]);
 				requestValues.put("URI", lineSplit[1]);
 
-				System.out.println(lineSplit[1]);
+				System.out.println("HTTP VERB: " + lineSplit[0]);
 
-				requestValues.put("httpVersion", lineSplit[2]);
+				requestValues.put("HTTP_PROTOCOL", lineSplit[2]);
 
-				if(requestValues.get("httpMethod").equals("GET") && requestValues.get("URI").contains("?")){
-					String[] uriSplit = requestValues.get("URI").split("\\?");
-					requestValues.put("URI", uriSplit[0]);
-					if(uriSplit.length == 2){
-						parseParameters(uriSplit[1]);
-					}
-				}
+				parseParameters();
 
 			} else {
 				isBadRequest = true;
@@ -88,15 +92,14 @@ public class Request {
 		}
 	}
 
-	private void parseParameters(String s) {
-		try {
-			String[] parameters = s.split("&");
-			for (String parameter : parameters) {
-				String[] singleParam = parameter.split("=");
-				paramMap.put(singleParam[0], singleParam[1]);
+	private void parseParameters() {
+		requestValues.put("QUERY_STRING", "");
+		if(requestValues.get("HTTP_VERB").equals("GET") && requestValues.get("URI").contains("?")){
+			String[] uriSplit = requestValues.get("URI").split("\\?");
+			requestValues.put("URI", uriSplit[0]);
+			if(uriSplit.length == 2){
+				requestValues.put("QUERY_STRING", uriSplit[1]);
 			}
-		} catch(Exception e) {
-			System.out.println("Error parsing parameters for GET request");
 		}
 	}
 

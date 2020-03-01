@@ -14,9 +14,9 @@ public class Response404Status extends Response {
 
 	@Override
 	public void processRequest(Request request) {
-		responseValues.put("statusCode", "404");
-		responseValues.put("reasonPhrase", "Not Found");
-		responseHeaders.put("Content-Type", Configuration.getMime("html"));
+		responseValues.put("STATUS_CODE", "404");
+		responseValues.put("REASON_PHRASE", "Not Found");
+		responseHeaders.put("CONTENT_TYPE", Configuration.getMime("html"));
 		String dir = System.getProperty("user.dir");
 		responseBody = ResourceSearch.readContents(dir + "/PrebuiltWebPages/404Error.html");
 		responseHeaders.put("Content-Length", Integer.toString(responseBody.size()));

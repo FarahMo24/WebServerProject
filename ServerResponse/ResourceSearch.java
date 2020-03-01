@@ -25,7 +25,6 @@ public class ResourceSearch {
 	}
 
 	public static void createFile(String path, byte[] contents) {
-		//TODO: Do we need to handle permissions?
 		try {
 			File f = new File(path);
 			if(f.createNewFile()) {

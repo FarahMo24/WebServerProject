@@ -14,8 +14,8 @@ public class Response201Status extends Response {
 
 	@Override
 	public void processRequest(Request request) {
-		responseValues.put("statusCode", "201");
-		responseValues.put("reasonPhrase", "Created");
+		responseValues.put("STATUS_CODE", "201");
+		responseValues.put("REASON_PHRASE", "Created");
 		ResourceSearch.createFile(UriHandler.resolveURI(request.getURI()), request.getBody());
 	}
 }

@@ -14,8 +14,8 @@ public class Response304Status extends Response {
 
 	@Override
 	public void processRequest(Request request) {
-		responseValues.put("statusCode", "304");
-		responseValues.put("reasonPhrase", "Not Modified");
-		responseHeaders.put("Last-Modified", ResourceSearch.lastModified(UriHandler.resolveURI(request.getURI())));
+		responseValues.put("STATUS_CODE", "304");
+		responseValues.put("REASON_PHRASE", "Not Modified");
+		responseHeaders.put("LAST_MODIFIED", ResourceSearch.lastModified(UriHandler.resolveURI(request.getURI())));
 	}
 }

@@ -14,8 +14,8 @@ public class Response204Status extends Response {
 
 	@Override
 	public void processRequest(Request request) {
-		responseValues.put("statusCode", "204");
-		responseValues.put("reasonPhrase", "No Content");
+		responseValues.put("STATUS_CODE", "204");
+		responseValues.put("REASON_PHRASE", "No Content");
 		ResourceSearch.deleteFile(UriHandler.resolveURI(request.getURI()));
 	}
 }

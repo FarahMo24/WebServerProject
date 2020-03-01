@@ -1,5 +1,6 @@
 package ServerUtils;
 
+import CGI.*;
 import ServerRequest.*;
 import ServerResponse.*;
 import ResponseStatusCode.*;
@@ -21,6 +22,9 @@ public class ServerHelper {
 			PrintWriter out = new PrintWriter(connect.getOutputStream(), true);
 
 			Request request = new Request(in);
+			if(UriHandler.isResourceScript(request.getURI())) {
+				CGI executor = new CGI(request);
+			}
 			Response response = ResponseStatusFactory.createResponse(request); //Call Factory Method to determine response
 			sendResponse(response);
 
@@ -31,8 +35,9 @@ public class ServerHelper {
 
 	public static void sendResponse(Response response) throws IOException {
 		ResponseGenerator outputValues = new ResponseGenerator(response);
-
+		System.out.println("HTTP VERSION: " + response.getHttpVersion());
 		PrintWriter out = new PrintWriter(connect.getOutputStream(), true);
+		System.out.println("Sending response: " + outputValues.responseOutput);
 		out.println(outputValues.responseOutput);
 		if(outputValues.bodyOutput != null) {
 			connect.getOutputStream().write(outputValues.bodyOutput);
