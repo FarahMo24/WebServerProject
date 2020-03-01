@@ -12,8 +12,8 @@ public class Response400Status extends Response {
 
 	@Override
 	public void processRequest(Request request) {
-		responseValues.put("statusCode", "400");
-		responseValues.put("reasonPhrase", "Bad Request");
+		responseValues.put("STATUS_CODE", "400");
+		responseValues.put("REASON_PHRASE", "Bad Request");
 	}
 
 }

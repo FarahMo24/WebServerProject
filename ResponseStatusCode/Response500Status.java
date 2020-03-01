@@ -12,7 +12,7 @@ public class Response500Status extends Response {
 
 	@Override
 	public void processRequest(Request request) {
-		responseValues.put("statusCode", "500");
-		responseValues.put("reasonPhrase", "Internal Server Error");
+		responseValues.put("STATUS_CODE", "500");
+		responseValues.put("REASON_PHRASE", "Internal Server Error");
 	}
 }

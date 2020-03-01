@@ -3,8 +3,6 @@ package ServerResponse;
 import java.util.HashMap;
 import java.util.ArrayList;
 import ServerRequest.Request;
-import ServerRequest.UriHandler;
-import ServerConfig.Configuration;
 
 public abstract class Response {
 
@@ -16,15 +14,15 @@ public abstract class Response {
 	}
 
 	public String getHttpVersion() {
-		return responseValues.get("httpVersion");
+		return responseValues.get("HTTP_PROTOCOL");
 	}
 
 	public String getStatusCode() {
-		return responseValues.get("statusCode");
+		return responseValues.get("STATUS_CODE");
 	}
 
 	public String getReasonPhrase() {
-		return responseValues.get("reasonPhrase");
+		return responseValues.get("REASON_PHRASE");
 	}
 
 	public HashMap<String, String> getResponseHeaders() {
@@ -38,7 +36,7 @@ public abstract class Response {
 	public Response(Request request) {
 		responseValues = new HashMap<>();
 		responseHeaders = new HashMap<>();
-		responseValues.put("httpVersion", request.getHttpVersion());
+		responseValues.put("HTTP_PROTOCOL", request.getHttpVersion());
 		processRequest(request);
 	}
 

@@ -14,9 +14,10 @@ public class Response200Status extends Response {
 
 	@Override
 	public void processRequest(Request request) {
-		responseValues.put("statusCode", "200");
-		responseValues.put("reasonPhrase", "OK");
+		responseValues.put("STATUS_CODE", "200");
+		responseValues.put("REASON_PHRASE", "OK");
 		responseHeaders.put("Content-Type", Configuration.getMime(Helpers.getFileExtension(UriHandler.resolveURI(request.getURI()))));
+		System.out.println("File Extension: " + Helpers.getFileExtension(UriHandler.resolveURI(request.getURI())));
 		responseBody = ResourceSearch.readContents(UriHandler.resolveURI(request.getURI()));
 		responseHeaders.put("Content-Length", Integer.toString(responseBody.size()));
 	}

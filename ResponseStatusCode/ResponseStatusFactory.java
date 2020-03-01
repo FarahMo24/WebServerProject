@@ -7,6 +7,9 @@ import java.io.File;
 
 public class ResponseStatusFactory {
 
+	//TODO: Handle If-Modified-Since
+	//TODO: Handle Required headers
+
 	public static Response createResponse(Request request) {
 		if(request.isBadRequest) {
 			return new Response400Status(request);
@@ -18,9 +21,9 @@ public class ResponseStatusFactory {
 			return new Response204Status(request);
 		} else if (request.getHttpMethod().equals("HEAD")) {
 			return new Response304Status(request);
-		}
-		 // Authorized and Authenticated error
-		else if(isAuthorized(request)){
+		} else if(UriHandler.isResourceScript(request.getURI())) {
+			return new ResponseCGI200Status(request);
+    } else if(isAuthorized(request)){
 			// if Authorized check if it authenticated
 			if(isAuthenticated){
 				// Successful
@@ -33,6 +36,9 @@ public class ResponseStatusFactory {
 		else if(!isAuthorized()){
 			// if not Authorized
 			return new Response401Status(request);
+      
+		} else {
+			return new Response200Status(request);
 		}
 		return new Response200Status(request);
 	}
@@ -93,6 +99,7 @@ public class ResponseStatusFactory {
     	}
 	
 	private static boolean fileExists(String filePath) {
+		System.out.println("File Path: " + filePath);
 		File f = new File(filePath);
 		return f.exists();
 	}
