@@ -97,8 +97,4 @@ public class HtaccessHandler {
 
         return HtpasswdHandler.isAuthorized(encryptedString);
     }
-
-
-
 }
-
