@@ -1,5 +1,7 @@
 package ServerConfig;
 
+import ServerUtils.ServerHelper;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -9,11 +11,16 @@ import java.util.*;
 public class Configuration {
 
 	private static final ServerConfiguration serverConfig = new ServerConfiguration();
-	private static final ServerMimeMap mimeMap = new ServerMimeMap(new File(System.getProperty("user.dir") + "/conf/mime.types"));
+		private static final ServerMimeMap mimeMap = new ServerMimeMap(new File(System.getProperty("user.dir") + "/conf/mime.types"));
 
 	static {
-		String dir = System.getProperty("user.dir");
-		serverConfig.createSettingsFromFile(Paths.get(dir + "/conf/httpd.conf"));
+		try {
+			String dir = System.getProperty("user.dir");
+			serverConfig.createSettingsFromFile(Paths.get(dir + "/conf/httpd.conf"));
+		} catch(IOException e) {
+			ServerHelper.isServerError = true;
+			e.printStackTrace();
+		}
 	}
 
 	public static String getMime(String ext) {
@@ -123,49 +130,46 @@ public class Configuration {
 			return getScriptAlias().get(scriptAlias);
 		}
 
-		void createSettingsFromFile(Path configPath) {
-			try {
-				List<String> fileLines = Files.readAllLines(configPath, Charset.defaultCharset());
-				for(String line : fileLines) {
-					ConfigEntry setting = new ConfigParser(line).getSetting();
-					setting.storeEntry();
-				}
-			} catch (IOException e) {
-				System.out.println("Error reading configuration file" + e);
+		void createSettingsFromFile(Path configPath) throws IOException {
+			List<String> fileLines = Files.readAllLines(configPath, Charset.defaultCharset());
+			for(String line : fileLines) {
+				ConfigEntry setting = new ConfigParser(line).getSetting();
+				setting.storeEntry();
 			}
 		}
 	}
 
 	private static class ServerMimeMap {
+
 		private HashMap<String, String> mapExt;
 
-		ServerMimeMap(File mimeFile){
-			createMapping(mimeFile);
+		ServerMimeMap(File mimeFile) {
+			try {
+				createMapping(mimeFile);
+			} catch(IOException e) {
+				ServerHelper.isServerError = true;
+				e.printStackTrace();
+			}
 		}
 
 		String getMime(String ext){
 			return mapExt.get(ext);
 		}
 
-		private void createMapping(File mimeFile){
+		private void createMapping(File mimeFile) throws IOException {
 			HashMap<String,String> extMap = new HashMap<>();
-			try{
-
-				Scanner fileReader = new Scanner(mimeFile);
-				while(fileReader.hasNext()) {
-					String str = fileReader.nextLine();
-					if (str.startsWith("#") || str.startsWith(" ")) {
-						continue;
-					}
-					String mimeType;
-					String[] splitArr = str.split("\\s+");
-					mimeType = splitArr[0];
-					for(int i = 1; i < splitArr.length;i++){
-						extMap.put(splitArr[i],mimeType);
-					}
+			Scanner fileReader = new Scanner(mimeFile);
+			while(fileReader.hasNext()) {
+				String str = fileReader.nextLine();
+				if (str.startsWith("#") || str.startsWith(" ")) {
+					continue;
 				}
-			}catch (IOException e){
-				System.out.println("File not ");
+				String mimeType;
+				String[] splitArr = str.split("\\s+");
+				mimeType = splitArr[0];
+				for(int i = 1; i < splitArr.length;i++){
+					extMap.put(splitArr[i],mimeType);
+				}
 			}
 			this.mapExt = extMap;
 		}

@@ -1,15 +1,10 @@
 package ServerRequest;
 
-import ServerUtils.*;
-import ResponseStatusCode.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.ArrayList;
 
 public class Request {
-
-	//TODO: Make sure all 400 error cases are accounted for here
 
 	private final HashMap<String, String> requestValues;
 	private byte[] body;
@@ -50,9 +45,9 @@ public class Request {
 	}
 
 	private void parseBody(BufferedReader in) throws IOException {
-		if(headers.containsKey("CONTENT_LENGTH")){
-			if(!headers.get("CONTENT_LENGTH").equals("0")){
-				int length = Integer.parseInt(headers.get("CONTENT_LENGTH")); //Number of bytes in body
+		if(headers.containsKey("CONTENT-LENGTH")){
+			if(!headers.get("CONTENT-LENGTH").equals("0")){
+				int length = Integer.parseInt(headers.get("CONTENT-LENGTH"));
 				byte[] bodyData = new byte[length];
 				for(int i = 0; i < length; i++){
 					byte bodyElement = (byte) in.read();
@@ -71,24 +66,17 @@ public class Request {
 		}
 	}
 
-	private void parseFirstLine(String line){
-		try {
-			String[] lineSplit = line.split("\\s+");
-			if(lineSplit.length == 3) {
-				requestValues.put("HTTP_VERB", lineSplit[0]);
-				requestValues.put("URI", lineSplit[1]);
-
-				System.out.println("HTTP VERB: " + lineSplit[0]);
-
-				requestValues.put("HTTP_PROTOCOL", lineSplit[2]);
-
-				parseParameters();
-
-			} else {
-				isBadRequest = true;
-			}
-		} catch(Exception e) {
-			e.printStackTrace();
+	private void parseFirstLine(String line) {
+		String[] lineSplit = line.split("\\s+");
+		if(!BadRequest.isBadFirstLine(line)) {
+			requestValues.put("HTTP_VERB", lineSplit[0]);
+			requestValues.put("URI", lineSplit[1]);
+			requestValues.put("HTTP_PROTOCOL", lineSplit[2]);
+			parseParameters();
+		} else {
+			requestValues.put("HTTP_VERB", "Bad");
+			requestValues.put("URI", "/");
+			requestValues.put("HTTP_PROTOCOL", "Bad");
 		}
 	}
 
@@ -104,19 +92,14 @@ public class Request {
 	}
 
 	private void parseHeader(String header_line) {
-		try{
-			String[] headerSplit = header_line.split(":");
-			if(headerSplit.length == 2 ){
-				headers.put(headerSplit[0],headerSplit[1]);
-			}
-		}catch(Exception e){
-			System.out.println("Error parsing request headers");
+		String[] headerSplit = header_line.split(":");
+		if(headerSplit.length == 2 ){
+			headers.put(headerSplit[0].toUpperCase(),headerSplit[1]);
 		}
 	}
 
 	public void outputHeaders() {
 		for (HashMap.Entry<String, String> entry: headers.entrySet()) {
-			System.out.println(entry.getKey() + "   " + entry.getValue());
 		}
 	}
 }

@@ -7,13 +7,11 @@ import java.io.*;
 
 public class CGI {
 
-	//TODO: Figure out how to hands 500 status codes
-
 	private Request request;
 	private HashMap<String, String> headers = new HashMap<>();
 	private ArrayList<Byte> body;
 
-	public CGI(Request request) {
+	public CGI(Request request) throws IOException, InterruptedException {
 		this.request = request;
 		this.body = new ArrayList<>();
 		executeCGIScript();
@@ -27,46 +25,54 @@ public class CGI {
 		return body;
 	}
 
-	private void executeCGIScript() {
-		try {
-			ProcessBuilder pb = new ProcessBuilder("perl", "-T",  UriHandler.resolveURI(request.getURI()));
-			Map<String, String> env = pb.environment();
-			String queryString = request.getQueryString();
-			env.put("QUERY_STRING", queryString);
-			for(Map.Entry<String, String> header : request.getHeaders().entrySet()) {
-				env.put(formatForCGI(header.getKey()), header.getValue());
-			}
-			env.put("HTTP_PROTOCOL", request.getHttpVersion());
-			env.put("HTTP_VERB", request.getHttpMethod());
-			env.put("HTTP_URI", request.getURI());
-			final Process p = pb.start();
-			BufferedReader br=new BufferedReader(new InputStreamReader(p.getInputStream()));
+	private void executeCGIScript() throws IOException, InterruptedException {
+		createBuilderForProcess();
+		ProcessBuilder pb = createBuilderForProcess();
+		setupProcessBuilderEnvironment(pb);
+		final Process p = pb.start();
+		BufferedReader br=new BufferedReader(new InputStreamReader(p.getInputStream()));
+		p.waitFor();
+		String header_line = br.readLine();
+		while(!header_line.equals("")) {
+			parseHeader(header_line);
+			header_line = br.readLine();
+		}
+		byte byteData;
+		while((byteData=(byte)br.read())!=-1) {
+			body.add(byteData);
+		}
+	}
 
-			p.waitFor();
-			String header_line = br.readLine();
-			System.out.println(header_line);
-			while(!header_line.equals("")) {
-				System.out.println(header_line);
-				parseHeader(header_line);
-				header_line = br.readLine();
-			}
-			byte byteData;
-			while((byteData=(byte)br.read())!=-1) {
-				body.add(byteData);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+	private void setupProcessBuilderEnvironment(ProcessBuilder pb) {
+		Map<String, String> env = pb.environment();
+		String queryString = request.getQueryString();
+		env.put("QUERY_STRING", queryString);
+		for(Map.Entry<String, String> header : request.getHeaders().entrySet()) {
+			env.put(formatForCGI(header.getKey()), header.getValue());
+		}
+		env.put("HTTP_PROTOCOL", request.getHttpVersion());
+		env.put("HTTP_VERB", request.getHttpMethod());
+		env.put("HTTP_URI", request.getURI());
+	}
+
+	private ProcessBuilder createBuilderForProcess() throws IOException {
+		BufferedReader br = new BufferedReader(new FileReader(UriHandler.resolveURI(request.getURI())));
+		String shebang = br.readLine();
+		String[] splitShebang = shebang.split("\\s+", 2);
+		String interpreter = splitShebang[0].substring(splitShebang[0].lastIndexOf("/") + 1, splitShebang[0].length());
+		if(interpreter.equals("perl")) {
+			return new ProcessBuilder("perl", "-T",  UriHandler.resolveURI(request.getURI()));
+		} else if(interpreter.equals("bash")) {
+			return new ProcessBuilder("sh", UriHandler.resolveURI(request.getURI()));
+		} else {
+			return new ProcessBuilder();
 		}
 	}
 
 	private void parseHeader(String header_line) {
-		try{
-			String[] headerSplit = header_line.split(":");
-			if(headerSplit.length == 2 ){
-				headers.put(headerSplit[0],headerSplit[1]);
-			}
-		}catch(Exception e){
-			e.printStackTrace();
+		String[] headerSplit = header_line.split(":");
+		if(headerSplit.length == 2 ){
+			headers.put(headerSplit[0],headerSplit[1]);
 		}
 	}
 

@@ -1,14 +1,12 @@
 package ResponseStatusCode;
 
-import ServerConfig.Configuration;
 import ServerRequest.Request;
-import ServerRequest.UriHandler;
 import ServerResponse.*;
-import ServerUtils.Helpers;
+import java.io.IOException;
 
 public class Response403Status extends Response {
 
-	public Response403Status(Request request) {
+	public Response403Status(Request request) throws IOException, InterruptedException {
 		super(request);
 	}
 

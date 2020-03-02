@@ -2,12 +2,12 @@ package ResponseStatusCode;
 
 import ServerResponse.*;
 import ServerRequest.*;
+import java.io.IOException;
 
 public class Response400Status extends Response {
 
-	public Response400Status(Request request) {
+	public Response400Status(Request request) throws IOException, InterruptedException {
 		super(request);
-		//processRequest(request);
 	}
 
 	@Override

@@ -5,10 +5,6 @@ import java.io.*;
 
 public class UriHandler {
 
-	public UriHandler(String uri) {
-
-	}
-
 	public static String resolveURI(String uri){
 		String lookup = parseAliasLookupKeyword(uri);
 		String pathSuffix = "";

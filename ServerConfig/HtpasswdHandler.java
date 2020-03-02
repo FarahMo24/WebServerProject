@@ -1,62 +1,66 @@
 package ServerConfig;
 
-import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.util.Base64;
 import java.util.HashMap;
-//import static org.apache.commons.codec.digest.MessageDigestAlgorithms.SHA_224;
 
 public class HtpasswdHandler {
-    // jrob:{SHA}cRDtpNCeBiql5KOQsKVyrA0sAiA=
 
-    public static HashMap<String, String> authUser = new HashMap<>();
+    private static HashMap<String, String> authUser = new HashMap<>();
 
-    static String username;
-    static String aliasPassword;
-    static String encryptedpassword;
+    private static String username;
     static String sha1;
 
-
-
-    public HtpasswdHandler(String htpassword) {
-        String[] line = htpassword.split("\\r?\\n");
-        for(int i = 0; i < line.length;i++){
-            String[] lineArr = line[i].split(":",2);
-            authUser.put(lineArr[0],lineArr[1]);
-        }
-    }
-
-    public static boolean isAuthorized(String encryptedString) {
+    public static boolean isAuthorized(String encryptedString) throws IOException {
+        setPropertiesFromHtPasswordContent(readHtPasswordContent());
         String[] decodedValues = decodeBase64(encryptedString);
         username = decodedValues[0];
         return authUser.containsKey(username);
     }
 
-    public static String[] decodeBase64(String encryptedString) {
+    private static String[] decodeBase64(String encryptedString) {
         String decodeValue = "";
         byte[] decodeBytes = Base64.getDecoder().decode(encryptedString.getBytes());
-        for(int i = 0; i < decodeBytes.length; i++) {
-            decodeValue = decodeValue + ((char) decodeBytes[i]);
+        for (byte decodeByte : decodeBytes) {
+            decodeValue = decodeValue + ((char) decodeByte);
         }
-        String[] splitDecodeValue = decodeValue.split(":", 2);
-        return splitDecodeValue;
+        return decodeValue.split(":", 2);
     }
 
-    public static Boolean isAuthenticated(String encryptedString) {
-        try {
-            aliasPassword = decodeBase64(encryptedString)[1];
-            MessageDigest mDigest = MessageDigest.getInstance( "SHA-1" );
-            byte[] result = mDigest.digest( aliasPassword.getBytes() );
-            encryptedpassword = Base64.getEncoder().encodeToString(result);
+    public static String readHtPasswordContent() throws IOException {
+        String dir = System.getProperty("user.dir");
+        File htpasswdFile = new File(dir + "/htFiles/.htpasswd");
+        FileInputStream htpswd = new FileInputStream(htpasswdFile);
+        byte[] htpasswd_data = new byte[(int) htpasswdFile.length()];
+        htpswd.read(htpasswd_data);
+        htpswd.close();
+        return new String(htpasswd_data, StandardCharsets.UTF_8);
+    }
+
+    public static Boolean isAuthenticated(String encryptedString) throws IOException, NoSuchAlgorithmException {
+        if (isAuthorized(encryptedString)) {
+            setPropertiesFromHtPasswordContent(readHtPasswordContent());
+            String aliasPassword = decodeBase64(encryptedString)[1];
+            MessageDigest mDigest = MessageDigest.getInstance("SHA-1");
+            byte[] result = mDigest.digest(aliasPassword.getBytes());
+            String encryptedpassword = Base64.getEncoder().encodeToString(result);
             String storedPassword = authUser.get(username);
-            storedPassword = storedPassword.replace("{SHA}","");
+            storedPassword = storedPassword.replace("{SHA}", "");
             return encryptedpassword.equals(storedPassword);
+        } else {
+            return false;
         }
-        catch (Exception e) {
-            e.printStackTrace();
+    }
+
+    private static void setPropertiesFromHtPasswordContent(String content) {
+        String[] lines = content.split("\\r?\\n");
+        for(String line : lines){
+            String[] lineArr = line.split(":",2);
+            authUser.put(lineArr[0],lineArr[1]);
         }
-        return false;
     }
 }

@@ -20,7 +20,7 @@ public abstract class ConfigEntry {
 		return configCategory;
 	}
 
-	public void storeEntry() {
+	void storeEntry() {
 		if(!keyword.equals("")) {
 			configCategory.put(keyword, value);
 		}

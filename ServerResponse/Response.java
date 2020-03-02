@@ -1,5 +1,7 @@
 package ServerResponse;
 
+import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.ArrayList;
 import ServerRequest.Request;
@@ -33,13 +35,15 @@ public abstract class Response {
 		return responseBody;
 	}
 
-	public Response(Request request) {
+	public Response(Request request) throws IOException, InterruptedException {
 		responseValues = new HashMap<>();
 		responseHeaders = new HashMap<>();
 		responseValues.put("HTTP_PROTOCOL", request.getHttpVersion());
+		responseHeaders.put("Server", "KnoxMoServer");
+		responseHeaders.put("Date", ResourceOperation.formatDate(new Date()));
 		processRequest(request);
 	}
 
-	public abstract void processRequest(Request request);
+	public abstract void processRequest(Request request) throws IOException, InterruptedException;
 
 }

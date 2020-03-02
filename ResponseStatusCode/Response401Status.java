@@ -2,10 +2,11 @@ package ResponseStatusCode;
 
 import ServerRequest.Request;
 import ServerResponse.*;
+import java.io.IOException;
 
 public class Response401Status extends Response {
 
-	public Response401Status(Request request) {
+	public Response401Status(Request request) throws IOException, InterruptedException {
 		super(request);
 	}
 

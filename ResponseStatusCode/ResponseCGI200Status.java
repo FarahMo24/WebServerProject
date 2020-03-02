@@ -3,20 +3,18 @@ package ResponseStatusCode;
 import ServerResponse.*;
 import ServerRequest.*;
 import CGI.*;
+import java.io.IOException;
 
 public class ResponseCGI200Status extends Response {
 
-	//TODO: Set standard server header info
-
-	public ResponseCGI200Status(Request request) {
+	public ResponseCGI200Status(Request request) throws IOException, InterruptedException {
 		super(request);
 	}
 
 	@Override
-	public void processRequest(Request request) {
+	public void processRequest(Request request) throws IOException, InterruptedException {
 		CGI programExecutor = new CGI(request);
 		responseHeaders = programExecutor.getHeaders();
-		System.out.println("Response header size: " + responseHeaders.size());
 		responseValues.put("STATUS_CODE", "200");
 		responseValues.put("REASON_PHRASE", "OK");
 		responseBody = programExecutor.getBody();

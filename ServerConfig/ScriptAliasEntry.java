@@ -1,8 +1,5 @@
 package ServerConfig;
 
-import ServerConfig.ConfigEntry;
-import ServerConfig.Configuration;
-
 class ScriptAliasEntry extends ConfigEntry {
 	ScriptAliasEntry(String key, String value) {
 		this.keyword = key;
