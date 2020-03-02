@@ -1,16 +1,22 @@
 package ResponseStatusCode;
 
+import ServerConfig.*;
 import ServerResponse.Response;
 import ServerRequest.Request;
 import ServerRequest.UriHandler;
-import java.io.File;
+import java.io.*;
+import java.util.HashMap;
 
 public class ResponseStatusFactory {
 
 	//TODO: Handle If-Modified-Since
 	//TODO: Handle Required headers
 
-	public static Response createResponse(Request request) {
+	private static HashMap<String, String> headers;
+	private static boolean isAuthenticated = false;
+	private static String encryptedString;
+
+	public static Response createResponse(Request request) throws IOException {
 		if(request.isBadRequest) {
 			return new Response400Status(request);
 		} else if (!fileExists(UriHandler.resolveURI(request.getURI())) && request.getHttpMethod().equals("PUT")) {
@@ -23,56 +29,56 @@ public class ResponseStatusFactory {
 			return new Response304Status(request);
 		} else if(UriHandler.isResourceScript(request.getURI())) {
 			return new ResponseCGI200Status(request);
-    } else if(isAuthorized(request)){
-			// if Authorized check if it authenticated
+        } else if(isAuthorized(request)){
 			if(isAuthenticated){
-				// Successful
 				return new Response200Status(request);
 			}else{
-				// Forbidden error
 				return new Response403Status(request);
 			}
-		}        
-		else if(!isAuthorized()){
-			// if not Authorized
+		}
+		else if(!isAuthorized(request)){
 			return new Response401Status(request);
-      
 		} else {
 			return new Response200Status(request);
 		}
-		return new Response200Status(request);
 	}
 	
 	private static boolean isAuthorized(Request request) throws FileNotFoundException, IOException {
-		File htaccessFile = new File("htFiles/.htaccess");
+		String dir = System.getProperty("user.dir");
+		File htaccessFile = new File(dir + "/htFiles/.htaccess");
 		FileInputStream htaccess = new FileInputStream(htaccessFile);
 		headers = new HashMap<>();
         
-		for(HashMap.Entry<String,String> e: request.getHeaders().entrySet()){           
+		for(HashMap.Entry<String,String> e: request.getHeaders().entrySet()){
+			//System.out.println(e.getKey());
 			headers.put(e.getKey(),e.getValue());
-		}      
-        
+		}
+
 		byte[] data = new byte[(int) htaccessFile.length()];
-        
 		htaccess.read(data);        
 		htaccess.close();
-
-		String content = new String(data,"UTF-8");
-        
+		String content = "";
+		for(int i = 0; i < data.length; i++) {
+			content = content + (char) data[i];
+		}
 		HtaccessHandler htaccessHandler = new HtaccessHandler(content);
 		if(!isProtected(UriHandler.resolveURI(request.getURI()))){
 			isAuthenticated = true;
 			return true;
-		}     
-		else{
+		} else {
+			System.out.println("Looking for valid user!--------------------");
 			if(htaccessHandler.require.equals("valid-user")){
+				System.out.println("Valid user found!--------------------");
 				if(!headers.containsKey("Authorization")){
 					return false;
-				}
-				else{
+				} else {
+					System.out.println("Headers contain authorization header");
 					String[] encryptedStringArray = headers.get("Authorization").split("\\s+");
+					System.out.println(encryptedStringArray[0]);
+					System.out.println(encryptedStringArray[1]);
 					encryptedString = encryptedStringArray[encryptedStringArray.length-1];
 					if(htaccessHandler.isAuthorized(encryptedString)){
+						System.out.println("HtaccessHandler Authorized");
 						if(htaccessHandler.isAuthenticated(encryptedString)){
 							isAuthenticated = true;
 						}else{
@@ -93,10 +99,10 @@ public class ResponseStatusFactory {
 	}
 
 	private static boolean isProtected(String path){
-        	File f = new File(path + "/.htaccess");
-
-        	return f.exists();
-    	}
+		String htaccessPath = path.subSequence(0, path.lastIndexOf("/")).toString();
+		File f = new File(htaccessPath + "/.htaccess");
+		return f.exists();
+	}
 	
 	private static boolean fileExists(String filePath) {
 		System.out.println("File Path: " + filePath);

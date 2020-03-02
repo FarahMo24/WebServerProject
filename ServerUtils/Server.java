@@ -2,7 +2,6 @@ package ServerUtils;
 
 import ServerConfig.*;
 
-import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -20,7 +19,7 @@ public class Server {
 				helper.RequestStart(client);
 				client.close();
 			}
-		}catch (IOException e){
+		}catch (Exception e){
 			System.out.println("Server Connection error: " + e.getMessage());
 		}
 

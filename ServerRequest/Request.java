@@ -105,7 +105,7 @@ public class Request {
 
 	private void parseHeader(String header_line) {
 		try{
-			String[] headerSplit = header_line.split(": ");
+			String[] headerSplit = header_line.split(":");
 			if(headerSplit.length == 2 ){
 				headers.put(headerSplit[0],headerSplit[1]);
 			}

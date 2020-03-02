@@ -18,6 +18,9 @@ public class Response200Status extends Response {
 		responseValues.put("REASON_PHRASE", "OK");
 		responseHeaders.put("Content-Type", Configuration.getMime(Helpers.getFileExtension(UriHandler.resolveURI(request.getURI()))));
 		System.out.println("File Extension: " + Helpers.getFileExtension(UriHandler.resolveURI(request.getURI())));
+		if(Helpers.getFileExtension(UriHandler.resolveURI(request.getURI())).equals("jpg")) {
+			System.out.println("JPEGFPEGEOIFJSLKFJHDSOIFJSDLFKJSDLFKJSDFOIDSJFDSF");
+		}
 		responseBody = ResourceSearch.readContents(UriHandler.resolveURI(request.getURI()));
 		responseHeaders.put("Content-Length", Integer.toString(responseBody.size()));
 	}

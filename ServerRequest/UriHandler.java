@@ -5,8 +5,6 @@ import java.io.*;
 
 public class UriHandler {
 
-	//TODO: Fix 404 error issue
-
 	public UriHandler(String uri) {
 
 	}
@@ -14,12 +12,10 @@ public class UriHandler {
 	public static String resolveURI(String uri){
 		String lookup = parseAliasLookupKeyword(uri);
 		String pathSuffix = "";
-		System.out.println("Alias lookup: " + lookup);
 		String[] uriComponents = uri.split("/");
 		if(uriComponents.length > 2) {
 			pathSuffix = uriComponents[2];
 		}
-		System.out.println("Path Suffix: " + pathSuffix);
 		String pathPrefix = resolveAlias(lookup);
 		String fullPath = pathPrefix + pathSuffix;
 		return appendDirectoryIndex(fullPath);
@@ -42,7 +38,11 @@ public class UriHandler {
 		} else if (Configuration.getPathForAlias(lookup) != null) {
 			return Configuration.getPathForAlias(lookup);
 		} else {
-			return Configuration.getDocumentRoot();
+			if(Configuration.getDocumentRoot().endsWith("/") && lookup.startsWith("/")) {
+				return Configuration.getDocumentRoot() + lookup.subSequence(1, lookup.length());
+			} else {
+				return Configuration.getDocumentRoot() + lookup;
+			}
 		}
 	}
 

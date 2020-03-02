@@ -1,9 +1,12 @@
 package ServerConfig;
 
 import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.*;
 import java.util.Base64;
 import java.util.HashMap;
+//import static org.apache.commons.codec.digest.MessageDigestAlgorithms.SHA_224;
 
 public class HtpasswdHandler {
     // jrob:{SHA}cRDtpNCeBiql5KOQsKVyrA0sAiA=
@@ -13,70 +16,47 @@ public class HtpasswdHandler {
     static String username;
     static String aliasPassword;
     static String encryptedpassword;
-    static String sha;
+    static String sha1;
 
 
 
     public HtpasswdHandler(String htpassword) {
-
         String[] line = htpassword.split("\\r?\\n");
-
         for(int i = 0; i < line.length;i++){
-
             String[] lineArr = line[i].split(":",2);
-
             authUser.put(lineArr[0],lineArr[1]);
-
         }
     }
 
-    // if username is in the authUser key
-    public static boolean isAuthorized(String encryptedString) throws UnsupportedEncodingException {
-
-        byte[] decode = Base64.getDecoder().decode(encryptedString);
-
-        String decodedValue = new String(decode,"UTF-8");
-
-        String[] lineArr = decodedValue.split(":", 2);
-
-        username = lineArr[0];
-
+    public static boolean isAuthorized(String encryptedString) {
+        String[] decodedValues = decodeBase64(encryptedString);
+        username = decodedValues[0];
         return authUser.containsKey(username);
     }
 
-
-
-    public static Boolean isAuthenticated(String encryptedString) throws UnsupportedEncodingException {
-
-        byte[] decode = Base64.getDecoder().decode(encryptedString);
-
-        String decodedValue = new String(decode,"UTF-8");
-
-        String[] lineArr = decodedValue.split(":", 2);
-
-        username = lineArr[0];
-
-        if (lineArr.length == 2) {
-
-            aliasPassword = lineArr[1];
-
+    public static String[] decodeBase64(String encryptedString) {
+        String decodeValue = "";
+        byte[] decodeBytes = Base64.getDecoder().decode(encryptedString.getBytes());
+        for(int i = 0; i < decodeBytes.length; i++) {
+            decodeValue = decodeValue + ((char) decodeBytes[i]);
         }
+        String[] splitDecodeValue = decodeValue.split(":", 2);
+        return splitDecodeValue;
+    }
 
-        encryptedpassword = authUser.get(username);
-        encryptedpassword = encryptedpassword.replace("{SHA}","");
-        // cRDtpNCeBiql5KOQsKVyrA0sAiA=
-
+    public static Boolean isAuthenticated(String encryptedString) {
         try {
-
-            aliasPassword = new sun.misc.BASE64Encoder().encode(java.security.MessageDigest.getInstance("SHA").digest(aliasPassword.getBytes()));
+            aliasPassword = decodeBase64(encryptedString)[1];
+            MessageDigest mDigest = MessageDigest.getInstance( "SHA-1" );
+            byte[] result = mDigest.digest( aliasPassword.getBytes() );
+            encryptedpassword = Base64.getEncoder().encodeToString(result);
+            String storedPassword = authUser.get(username);
+            storedPassword = storedPassword.replace("{SHA}","");
+            return encryptedpassword.equals(storedPassword);
         }
-        // if BASE64Encoder fails
-        catch (NoSuchAlgorithmException e) {
+        catch (Exception e) {
             e.printStackTrace();
         }
-
-        return encryptedpassword.equals((sha));
-
-
+        return false;
     }
 }

@@ -1,0 +1,4 @@
+AuthUserFile "/Users/aramisknox/Desktop/public_html/.htpasswd"
+AuthType Basic
+AuthName "I Challenge You"
+Require valid-user
