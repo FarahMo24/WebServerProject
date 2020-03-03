@@ -12,9 +12,7 @@ public class Response403Status extends Response {
 
 	@Override
 	public void processRequest(Request request) {
-		responseValues.put("STATUS_CODE", "413");
+		responseValues.put("STATUS_CODE", "403");
 		responseValues.put("REASON_PHRASE", "Forbidden");
 	}
-
-
 }

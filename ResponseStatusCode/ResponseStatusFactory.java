@@ -15,10 +15,12 @@ public class ResponseStatusFactory {
 	public static Response createResponse(Request request) throws IOException,InterruptedException, NoSuchAlgorithmException {
 
 		if(ServerHelper.isServerError) {
+			ServerHelper.isServerError = false;
 			return new Response500Status(request);
 		} else if(BadRequest.isBadRequest) {
+			BadRequest.isBadRequest = false;
 			return new Response400Status(request);
-		} else if (!fileExists(UriHandler.resolveURI(request.getURI()))) {
+		} else if (!fileExists(UriHandler.resolveURI(request.getURI())) && !request.getHttpMethod().equals("PUT")) {
 			return new Response404Status(request);
 		} else if(AuthorizationUtils.isRequestAuthenticated(request)) {
 			if (request.getHttpMethod().equals("PUT")) {

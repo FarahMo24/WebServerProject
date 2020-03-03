@@ -74,9 +74,29 @@ public class Request {
 			requestValues.put("HTTP_PROTOCOL", lineSplit[2]);
 			parseParameters();
 		} else {
-			requestValues.put("HTTP_VERB", "Bad");
-			requestValues.put("URI", "/");
-			requestValues.put("HTTP_PROTOCOL", "Bad");
+			setFieldsForBadRequest(lineSplit);
+		}
+	}
+
+	private void setFieldsForBadRequest(String[] lineSplit) {
+		if(lineSplit.length == 3) {
+			requestValues.put("HTTP_VERB", lineSplit[0]);
+			requestValues.put("URI", lineSplit[1]);
+			requestValues.put("HTTP_PROTOCOL", lineSplit[3]);
+		}
+		if(lineSplit.length >= 2) {
+			requestValues.put("HTTP_VERB", lineSplit[0]);
+			requestValues.put("URI", lineSplit[1]);
+			requestValues.put("HTTP_PROTOCOL", "");
+		}
+		if(lineSplit.length >= 1) {
+			requestValues.put("HTTP_VERB", lineSplit[0]);
+			requestValues.put("URI", "");
+			requestValues.put("HTTP_PROTOCOL", "");
+		} else {
+			requestValues.put("HTTP_VERB", "");
+			requestValues.put("URI", "");
+			requestValues.put("HTTP_PROTOCOL", "");
 		}
 	}
 
