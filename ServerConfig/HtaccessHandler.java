@@ -8,6 +8,10 @@ public class HtaccessHandler {
     public String require;
 
     public HtaccessHandler(String htacc) {
+       readPropertiesFromHtAccessFile(htacc);
+    }
+
+    private void readPropertiesFromHtAccessFile(String htacc) {
         String[] lineArr = htacc.split("\\r?\\n");
         for (String line : lineArr) {
             String[] lineSplit = line.split("\\s+", 2);

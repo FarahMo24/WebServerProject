@@ -11,13 +11,8 @@ public class Server {
 		try {
 			ServerSocket serverConnect = new ServerSocket(Integer.parseInt(Configuration.getPort()));
 			Socket client;
-
-			int counter = 0;
-
 			while(true){
-				counter++;
 				client = serverConnect.accept();
-				System.out.println(" >> " + "Client No:" + counter + " started!");
 				ServerHelper helper = new ServerHelper();
 				helper.RequestStart(client);
 				client.close();

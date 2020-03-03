@@ -1,5 +1,7 @@
 package ServerConfig;
 
+import ServerUtils.Logger;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -61,6 +63,7 @@ public class HtpasswdHandler {
         for(String line : lines){
             String[] lineArr = line.split(":",2);
             authUser.put(lineArr[0],lineArr[1]);
+            Logger.setUser(lineArr[0]);
         }
     }
 }

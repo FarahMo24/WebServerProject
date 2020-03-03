@@ -24,6 +24,7 @@ public class ServerHelper extends Thread {
 				CGI executor = new CGI(request);
 			}
 			Response response = ResponseStatusFactory.createResponse(request);
+			Logger.outputLog(request, response);
 			sendResponse(response);
 		} catch(Exception e) {
 			isServerError = true;
